@@ -1507,7 +1507,7 @@
 								"referenceName": "CustomerCSV",
 								"type": "DatasetReference",
 								"parameters": {
-									"FileName": "C"
+									"FileName": "Customer01.csv"
 								}
 							},
 							"fieldList": [
