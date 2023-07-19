@@ -20,7 +20,7 @@
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"CustomerStream": {
-								"FileName": "Cuds"
+								"FileName": "Customer01.csv"
 							}
 						}
 					},
@@ -35,7 +35,8 @@
 						"coreCount": 8,
 						"computeType": "General"
 					},
-					"traceLevel": "Fine"
+					"traceLevel": "Fine",
+					"sourceStagingConcurrency": 1
 				}
 			}
 		],
