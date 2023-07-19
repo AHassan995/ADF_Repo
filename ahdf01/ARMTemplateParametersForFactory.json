@@ -1,0 +1,33 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "ahdf01"
+		},
+		"AzureSynapseAnalytics1_connectionString": {
+			"value": ""
+		},
+		"NginxAccessLog_password": {
+			"value": ""
+		},
+		"ahazuresa01_accountKey": {
+			"value": ""
+		},
+		"ahsa01_connectionString": {
+			"value": ""
+		},
+		"ahsqldb01_connectionString": {
+			"value": ""
+		},
+		"NginxAccessLog_properties_typeProperties_host": {
+			"value": "D:\\nginx-1.24.0\\logs"
+		},
+		"NginxAccessLog_properties_typeProperties_userId": {
+			"value": "ahuser"
+		},
+		"ahazuresa01_properties_typeProperties_url": {
+			"value": "https://ahazuresa01.dfs.core.windows.net/"
+		}
+	}
+}
