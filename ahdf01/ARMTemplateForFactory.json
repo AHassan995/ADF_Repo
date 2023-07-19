@@ -1468,7 +1468,7 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"url": "https://ahazuresa01.blob.core.windows.net/csv/Log.csv",
+							"url": "https://ahazuresa01.blob.core.windows.net/csv/Customers/Customer01.csv",
 							"method": "GET",
 							"headers": {}
 						}
