@@ -1,0 +1,13 @@
+{
+	"name": "AzureSqlTables",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ahsqldb01",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,41 @@
+{
+	"name": "10_NginxToSpool",
+	"properties": {
+		"activities": [
+			{
+				"name": "DT_ServerLog",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "06_DF_Nginx",
+						"type": "DataFlowReference"
+					},
+					"staging": {
+						"linkedService": {
+							"referenceName": "ahazuresa01",
+							"type": "LinkedServiceReference"
+						},
+						"folderPath": "staging"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-07-19T08:07:18Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

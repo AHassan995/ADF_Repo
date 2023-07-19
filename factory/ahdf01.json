@@ -1,0 +1,9 @@
+{
+	"name": "ahdf01",
+	"location": "uaenorth",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "1f35a050-dd83-4be1-80a9-b83992a3af44",
+		"tenantId": "afc00753-8e80-40b4-89de-1d232e1948bc"
+	}
+}
