@@ -1,5 +1,5 @@
 {
-	"name": "08_DataFlow_DimCustomers",
+	"name": "08dataflowdimcustomers",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {

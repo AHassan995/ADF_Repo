@@ -65,16 +65,8 @@
 							"userProperties": [],
 							"typeProperties": {
 								"dataflow": {
-									"referenceName": "08_DataFlow_DimCustomers",
-									"type": "DataFlowReference",
-									"datasetParameters": {
-										"DimCustomerStream": {
-											"FileName": {
-												"value": "@item().name",
-												"type": "Expression"
-											}
-										}
-									}
+									"referenceName": "08dataflowdimcustomers",
+									"type": "DataFlowReference"
 								},
 								"staging": {
 									"linkedService": {
