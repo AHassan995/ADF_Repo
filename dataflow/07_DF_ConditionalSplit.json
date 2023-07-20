@@ -1,0 +1,93 @@
+{
+	"name": "07_DF_ConditionalSplit",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "LogData_Parquet",
+						"type": "DatasetReference"
+					},
+					"name": "LogDataParquetStream"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ahsynapseLogDataParquet",
+						"type": "DatasetReference"
+					},
+					"name": "LogDataParquetTGT"
+				}
+			],
+			"transformations": [
+				{
+					"name": "ConditionalSplitStream"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Correlationid as string,",
+				"          Operationname as string,",
+				"          Status as string,",
+				"          Eventcategory as string,",
+				"          Level as string,",
+				"          Time as timestamp,",
+				"          Subscription as string,",
+				"          Eventinitiatedby as string,",
+				"          Resourcetype as string,",
+				"          Resourcegroup as string,",
+				"          Resource as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     rowUrlColumn: 'FilePath',",
+				"     format: 'parquet') ~> LogDataParquetStream",
+				"LogDataParquetStream split(Resourcegroup == 'app-grp',",
+				"     disjoint: false) ~> ConditionalSplitStream@(appgrpStream, otherResourcegroups)",
+				"ConditionalSplitStream@appgrpStream sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          Correlationid as string,",
+				"          Operationname as string,",
+				"          Status as string,",
+				"          Eventcategory as string,",
+				"          Level as string,",
+				"          Time as timestamp,",
+				"          Subscription as string,",
+				"          Eventinitiatedby as string,",
+				"          Resourcetype as string,",
+				"          Resourcegroup as string,",
+				"          Resource as string,",
+				"          FilePath as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          Correlationid,",
+				"          Operationname,",
+				"          Status,",
+				"          Eventcategory,",
+				"          Level,",
+				"          Time,",
+				"          Subscription,",
+				"          Eventinitiatedby,",
+				"          Resourcetype,",
+				"          Resourcegroup,",
+				"          Resource,",
+				"          FilePath",
+				"     )) ~> LogDataParquetTGT"
+			]
+		}
+	}
+}

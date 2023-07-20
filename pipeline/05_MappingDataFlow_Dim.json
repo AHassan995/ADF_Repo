@@ -1,0 +1,47 @@
+{
+	"name": "05_MappingDataFlow_Dim",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_DIM_Tables",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "02_DataFlow_Dim",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"CustomerStream": {
+								"FileName": "Customer01.csv"
+							}
+						}
+					},
+					"staging": {
+						"linkedService": {
+							"referenceName": "ahazuresa01",
+							"type": "LinkedServiceReference"
+						},
+						"folderPath": "staging"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine",
+					"sourceStagingConcurrency": 1
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-07-19T17:01:18Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

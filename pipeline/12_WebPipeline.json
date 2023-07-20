@@ -1,0 +1,27 @@
+{
+	"name": "12_WebPipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Web1",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://ahazuresa01.blob.core.windows.net/csv/Customers/Customer01.csv",
+					"method": "GET"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-07-19T16:40:30Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

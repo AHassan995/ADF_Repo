@@ -1,0 +1,6 @@
+{
+	"name": "AHVMSelfHostedIntegrationRuntimes",
+	"properties": {
+		"type": "SelfHosted"
+	}
+}

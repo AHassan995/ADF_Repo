@@ -1,0 +1,41 @@
+{
+	"name": "08_MDF_JSON_Arrays_Objects",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_JSON_ARRAYS_OBJECTS",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "05_DF_JSON_Arrays_Objects",
+						"type": "DataFlowReference"
+					},
+					"staging": {
+						"linkedService": {
+							"referenceName": "ahazuresa01",
+							"type": "LinkedServiceReference"
+						},
+						"folderPath": "staging"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-07-19T06:39:36Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

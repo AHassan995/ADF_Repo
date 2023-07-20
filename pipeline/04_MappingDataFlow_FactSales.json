@@ -1,0 +1,41 @@
+{
+	"name": "04_MappingDataFlow_FactSales",
+	"properties": {
+		"activities": [
+			{
+				"name": "DT_FactSales",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "01_DataFlow_FactSales",
+						"type": "DataFlowReference"
+					},
+					"staging": {
+						"linkedService": {
+							"referenceName": "ahazuresa01",
+							"type": "LinkedServiceReference"
+						},
+						"folderPath": "staging"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-07-17T10:07:37Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
