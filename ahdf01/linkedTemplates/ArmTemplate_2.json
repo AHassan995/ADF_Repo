@@ -904,6 +904,7 @@
 								"value": "@activity('Get Metadata1').output.childItems",
 								"type": "Expression"
 							},
+							"isSequential": true,
 							"activities": [
 								{
 									"name": "DFDimCustomers",
@@ -925,7 +926,7 @@
 											"datasetParameters": {
 												"CustomerStream": {
 													"FileName": {
-														"value": "@item()",
+														"value": "@item().name",
 														"type": "Expression"
 													}
 												},
