@@ -64,10 +64,6 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"dataflow": {
-									"referenceName": "08dataflowdimcustomers",
-									"type": "DataFlowReference"
-								},
 								"staging": {
 									"linkedService": {
 										"referenceName": "ahazuresa01",
@@ -79,8 +75,7 @@
 									"coreCount": 8,
 									"computeType": "General"
 								},
-								"traceLevel": "Fine",
-								"sourceStagingConcurrency": 1
+								"traceLevel": "Fine"
 							}
 						}
 					]
