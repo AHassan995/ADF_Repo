@@ -16,14 +16,11 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataset": {
-						"referenceName": "CustomerCSV",
-						"type": "DatasetReference",
-						"parameters": {
-							"FileName": "Customer01.csv"
-						}
+						"referenceName": "DimCustomerMetadata",
+						"type": "DatasetReference"
 					},
 					"fieldList": [
-						"exists"
+						"childItems"
 					],
 					"storeSettings": {
 						"type": "AzureBlobFSReadSettings",
@@ -33,6 +30,67 @@
 					"formatSettings": {
 						"type": "DelimitedTextReadSettings"
 					}
+				}
+			},
+			{
+				"name": "ForEachFile",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Metadata1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Metadata1').output.childItems",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "DFDimCustomers",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "08_DataFlow_DimCustomers",
+									"type": "DataFlowReference",
+									"datasetParameters": {
+										"CustomerStream": {
+											"FileName": {
+												"value": "@item()",
+												"type": "Expression"
+											}
+										}
+									}
+								},
+								"staging": {
+									"linkedService": {
+										"referenceName": "ahazuresa01",
+										"type": "LinkedServiceReference"
+									},
+									"folderPath": "staging"
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine",
+								"sourceStagingConcurrency": 1
+							}
+						}
+					]
 				}
 			}
 		],

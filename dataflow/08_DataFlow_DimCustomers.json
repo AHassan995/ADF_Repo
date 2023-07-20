@@ -1,0 +1,146 @@
+{
+	"name": "08_DataFlow_DimCustomers",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "CustomerCSV",
+						"type": "DatasetReference"
+					},
+					"name": "CustomerStream"
+				},
+				{
+					"dataset": {
+						"referenceName": "DimCustomer_TGT",
+						"type": "DatasetReference"
+					},
+					"name": "GetMaxCustomerSK"
+				},
+				{
+					"dataset": {
+						"referenceName": "DimCustomer_TGT",
+						"type": "DatasetReference"
+					},
+					"name": "DIMCustomerLatest"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DimCustomer_TGT",
+						"type": "DatasetReference"
+					},
+					"name": "DimCustomerTGT"
+				},
+				{
+					"name": "CustomerSKSink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SelCustRequiredColStream"
+				},
+				{
+					"name": "GenerateCustomerSKStream"
+				},
+				{
+					"name": "UpdateCustomerSK"
+				},
+				{
+					"name": "CheckingCustomerExistence"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CustomerID as integer,",
+				"          NameStyle as string,",
+				"          Title as string,",
+				"          FirstName as string,",
+				"          MiddleName as string,",
+				"          LastName as string,",
+				"          Suffix as string,",
+				"          CompanyName as string,",
+				"          SalesPerson as string,",
+				"          EmailAddress as string,",
+				"          Phone as string,",
+				"          PasswordHash as string,",
+				"          PasswordSalt as string,",
+				"          rowguid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> CustomerStream",
+				"source(output(",
+				"          CustomerSK as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT MAX([CustomerSK]) as CustomerSK FROM [dbo].[DimCustomer]',",
+				"     format: 'query',",
+				"     staged: true) ~> GetMaxCustomerSK",
+				"source(output(",
+				"          CustomerSK as integer,",
+				"          CustomerID as integer,",
+				"          CompanyName as string,",
+				"          SalesPerson as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table',",
+				"     staged: true) ~> DIMCustomerLatest",
+				"CheckingCustomerExistence select(mapColumn(",
+				"          CustomerID,",
+				"          CompanyName,",
+				"          SalesPerson",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelCustRequiredColStream",
+				"SelCustRequiredColStream keyGenerate(output(CustomerSK as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> GenerateCustomerSKStream",
+				"GenerateCustomerSKStream derive(CustomerSK = CustomerSK + iif(isNull(CustomerSKSink#outputs()[1].CustomerSK),0,CustomerSKSink#outputs()[1].CustomerSK)) ~> UpdateCustomerSK",
+				"CustomerStream, DIMCustomerLatest exists(CustomerStream@CustomerID == DIMCustomerLatest@CustomerID,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> CheckingCustomerExistence",
+				"UpdateCustomerSK sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          CustomerSK as integer,",
+				"          CustomerID as integer,",
+				"          CompanyName as string,",
+				"          SalesPerson as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          CustomerSK,",
+				"          CustomerID,",
+				"          CompanyName,",
+				"          SalesPerson",
+				"     )) ~> DimCustomerTGT",
+				"GetMaxCustomerSK sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 0,",
+				"     mapColumn(",
+				"          CustomerSK",
+				"     )) ~> CustomerSKSink"
+			]
+		}
+	}
+}
