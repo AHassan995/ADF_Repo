@@ -35,8 +35,6 @@
 			{
 				"name": "ForEachFile",
 				"type": "ForEach",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Get Metadata1",
@@ -70,7 +68,7 @@
 									"referenceName": "08_DataFlow_DimCustomers",
 									"type": "DataFlowReference",
 									"datasetParameters": {
-										"CustomerStream": {
+										"DimCustomerStream": {
 											"FileName": {
 												"value": "@item().name",
 												"type": "Expression"
