@@ -54,7 +54,7 @@
 			],
 			"scriptLines": [
 				"source(output(",
-				"          CustomerID as string,",
+				"          CustomerID as integer,",
 				"          CompanyName as string,",
 				"          SalesPerson as string",
 				"     ),",
