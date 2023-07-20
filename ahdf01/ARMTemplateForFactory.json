@@ -1524,8 +1524,6 @@
 					{
 						"name": "ForEachFile",
 						"type": "ForEach",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "Get Metadata1",
@@ -1560,14 +1558,14 @@
 											"type": "DataFlowReference",
 											"parameters": {},
 											"datasetParameters": {
-												"CustomerStream": {
+												"GetMaxCustomerSK": {},
+												"DIMCustomerLatest": {},
+												"DimCustomerStream": {
 													"FileName": {
 														"value": "@item().name",
 														"type": "Expression"
 													}
 												},
-												"GetMaxCustomerSK": {},
-												"DIMCustomerLatest": {},
 												"DimCustomerTGT": {},
 												"CustomerSKSink": {}
 											}
@@ -2075,20 +2073,7 @@
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
 				},
-				"schema": [
-					{
-						"name": "CustomerID",
-						"type": "String"
-					},
-					{
-						"name": "CompanyName",
-						"type": "String"
-					},
-					{
-						"name": "SalesPerson",
-						"type": "String"
-					}
-				]
+				"schema": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ahazuresa01')]"
@@ -4018,13 +4003,6 @@
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "DimCustomerCSV",
-								"type": "DatasetReference"
-							},
-							"name": "CustomerStream"
-						},
-						{
-							"dataset": {
 								"referenceName": "DimCustomer_TGT",
 								"type": "DatasetReference"
 							},
@@ -4036,6 +4014,13 @@
 								"type": "DatasetReference"
 							},
 							"name": "DIMCustomerLatest"
+						},
+						{
+							"dataset": {
+								"referenceName": "DimCustomerCSV",
+								"type": "DatasetReference"
+							},
+							"name": "DimCustomerStream"
 						}
 					],
 					"sinks": [
@@ -4062,17 +4047,12 @@
 						},
 						{
 							"name": "CheckingCustomerExistence"
+						},
+						{
+							"name": "MappDriftedColumn"
 						}
 					],
 					"scriptLines": [
-						"source(output(",
-						"          CustomerID as integer,",
-						"          CompanyName as string,",
-						"          SalesPerson as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> CustomerStream",
 						"source(output(",
 						"          CustomerSK as integer",
 						"     ),",
@@ -4093,20 +4073,20 @@
 						"     isolationLevel: 'READ_UNCOMMITTED',",
 						"     format: 'table',",
 						"     staged: true) ~> DIMCustomerLatest",
-						"CheckingCustomerExistence select(mapColumn(",
-						"          CustomerID,",
-						"          CompanyName,",
-						"          SalesPerson",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
+						"source(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
+						"     ignoreNoFilesFound: false) ~> DimCustomerStream",
+						"CheckingCustomerExistence select(skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> SelCustRequiredColStream",
 						"SelCustRequiredColStream keyGenerate(output(CustomerSK as long),",
 						"     startAt: 1L,",
 						"     stepValue: 1L) ~> GenerateCustomerSKStream",
 						"GenerateCustomerSKStream derive(CustomerSK = CustomerSK + iif(isNull(CustomerSKSink#outputs()[1].CustomerSK),0,CustomerSKSink#outputs()[1].CustomerSK)) ~> UpdateCustomerSK",
-						"CustomerStream, DIMCustomerLatest exists(CustomerStream@CustomerID == DIMCustomerLatest@CustomerID,",
+						"MappDriftedColumn, DIMCustomerLatest exists(MappDriftedColumn@CustomerID == DIMCustomerLatest@CustomerID,",
 						"     negate:true,",
 						"     broadcast: 'auto')~> CheckingCustomerExistence",
+						"DimCustomerStream derive(CustomerID = toInteger(byName('CustomerID'))) ~> MappDriftedColumn",
 						"UpdateCustomerSK sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
@@ -4124,13 +4104,7 @@
 						"     allowCopyCommand: true,",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError',",
-						"     mapColumn(",
-						"          CustomerSK,",
-						"          CustomerID,",
-						"          CompanyName,",
-						"          SalesPerson",
-						"     )) ~> DimCustomerTGT",
+						"     errorHandlingOption: 'stopOnFirstError') ~> DimCustomerTGT",
 						"GetMaxCustomerSK sink(validateSchema: false,",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
@@ -4145,8 +4119,8 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DimCustomerCSV')]",
-				"[concat(variables('factoryId'), '/datasets/DimCustomer_TGT')]"
+				"[concat(variables('factoryId'), '/datasets/DimCustomer_TGT')]",
+				"[concat(variables('factoryId'), '/datasets/DimCustomerCSV')]"
 			]
 		}
 	]
