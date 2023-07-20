@@ -6,7 +6,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "CustomerCSV",
+						"referenceName": "DimCustomerCSV",
 						"type": "DatasetReference"
 					},
 					"name": "CustomerStream"
@@ -54,20 +54,9 @@
 			],
 			"scriptLines": [
 				"source(output(",
-				"          CustomerID as integer,",
-				"          NameStyle as string,",
-				"          Title as string,",
-				"          FirstName as string,",
-				"          MiddleName as string,",
-				"          LastName as string,",
-				"          Suffix as string,",
+				"          CustomerID as string,",
 				"          CompanyName as string,",
-				"          SalesPerson as string,",
-				"          EmailAddress as string,",
-				"          Phone as string,",
-				"          PasswordHash as string,",
-				"          PasswordSalt as string,",
-				"          rowguid as string",
+				"          SalesPerson as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
