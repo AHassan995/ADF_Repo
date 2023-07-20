@@ -25,6 +25,50 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/ProductCategory_Table')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ahsqldb01",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "ProductCategoryID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ParentProductCategoryID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Name",
+						"type": "nvarchar"
+					},
+					{
+						"name": "rowguid",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "ModifiedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "SalesLT",
+					"table": "ProductCategory"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ProductModel_Table')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1853,7 +1897,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/Product_Table')]",
-				"[concat(variables('factoryId'), '/datasets/ProductModel_Table')]"
+				"[concat(variables('factoryId'), '/datasets/ProductModel_Table')]",
+				"[concat(variables('factoryId'), '/datasets/ProductCategory_Table')]"
 			]
 		},
 		{
@@ -2188,104 +2233,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/serverlog_Table')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/07_DF_ConditionalSplit')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "LogData_Parquet",
-								"type": "DatasetReference"
-							},
-							"name": "LogDataParquetStream"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "ahsynapseLogDataParquet",
-								"type": "DatasetReference"
-							},
-							"name": "LogDataParquetTGT"
-						}
-					],
-					"transformations": [
-						{
-							"name": "ConditionalSplitStream"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          Correlationid as string,",
-						"          Operationname as string,",
-						"          Status as string,",
-						"          Eventcategory as string,",
-						"          Level as string,",
-						"          Time as timestamp,",
-						"          Subscription as string,",
-						"          Eventinitiatedby as string,",
-						"          Resourcetype as string,",
-						"          Resourcegroup as string,",
-						"          Resource as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     rowUrlColumn: 'FilePath',",
-						"     format: 'parquet') ~> LogDataParquetStream",
-						"LogDataParquetStream split(Resourcegroup == 'app-grp',",
-						"     disjoint: false) ~> ConditionalSplitStream@(appgrpStream, otherResourcegroups)",
-						"ConditionalSplitStream@appgrpStream sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          Correlationid as string,",
-						"          Operationname as string,",
-						"          Status as string,",
-						"          Eventcategory as string,",
-						"          Level as string,",
-						"          Time as timestamp,",
-						"          Subscription as string,",
-						"          Eventinitiatedby as string,",
-						"          Resourcetype as string,",
-						"          Resourcegroup as string,",
-						"          Resource as string,",
-						"          FilePath as string",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     format: 'table',",
-						"     staged: true,",
-						"     allowCopyCommand: true,",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError',",
-						"     mapColumn(",
-						"          Correlationid,",
-						"          Operationname,",
-						"          Status,",
-						"          Eventcategory,",
-						"          Level,",
-						"          Time,",
-						"          Subscription,",
-						"          Eventinitiatedby,",
-						"          Resourcetype,",
-						"          Resourcegroup,",
-						"          Resource,",
-						"          FilePath",
-						"     )) ~> LogDataParquetTGT"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ahsynapseLogDataParquet')]"
 			]
 		}
 	]
